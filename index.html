@@ -72,46 +72,63 @@
   const bierInput = document.getElementById('bierInput');
   const bierTabel = document.querySelector('#bierTabel tbody');
 
+  let bieren = [];
+
+  // Laad bieren vanuit localStorage
+  window.onload = () => {
+    const opgeslagen = localStorage.getItem('bierVerzameling');
+    if (opgeslagen) {
+      bieren = JSON.parse(opgeslagen);
+      bieren.forEach(toonRij);
+    }
+  };
+
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const brouwerij = brouwerijInput.value.trim();
     const bier = bierInput.value.trim();
     if (brouwerij && bier) {
-      voegRijToe(brouwerij, bier);
+      const nieuwBier = { brouwerij, bier, voorraad: 0 };
+      bieren.push(nieuwBier);
+      slaOp();
+      toonRij(nieuwBier);
       brouwerijInput.value = '';
       bierInput.value = '';
     }
   });
 
-  function voegRijToe(brouwerij, bier) {
+  function toonRij(bierObj) {
     const rij = document.createElement('tr');
 
     const tdBrouwerij = document.createElement('td');
-    tdBrouwerij.textContent = brouwerij;
+    tdBrouwerij.textContent = bierObj.brouwerij;
 
     const tdBier = document.createElement('td');
-    tdBier.textContent = bier;
+    tdBier.textContent = bierObj.bier;
 
     const tdVoorraad = document.createElement('td');
-    let voorraad = 0;
     const span = document.createElement('span');
-    span.textContent = voorraad;
+    span.textContent = bierObj.voorraad;
 
     const plusBtn = document.createElement('button');
     plusBtn.textContent = '+';
     plusBtn.className = 'btn qty-btn';
-    plusBtn.onclick = () => {
-      voorraad++;
-      span.textContent = voorraad;
-    };
 
     const minBtn = document.createElement('button');
     minBtn.textContent = '−';
     minBtn.className = 'btn qty-btn';
+
+    plusBtn.onclick = () => {
+      bierObj.voorraad++;
+      span.textContent = bierObj.voorraad;
+      slaOp();
+    };
+
     minBtn.onclick = () => {
-      if (voorraad > 0) {
-        voorraad--;
-        span.textContent = voorraad;
+      if (bierObj.voorraad > 0) {
+        bierObj.voorraad--;
+        span.textContent = bierObj.voorraad;
+        slaOp();
       }
     };
 
@@ -123,7 +140,11 @@
     const delBtn = document.createElement('button');
     delBtn.textContent = 'Verwijder';
     delBtn.className = 'btn del-btn';
-    delBtn.onclick = () => rij.remove();
+    delBtn.onclick = () => {
+      rij.remove();
+      bieren = bieren.filter(item => !(item.brouwerij === bierObj.brouwerij && item.bier === bierObj.bier));
+      slaOp();
+    };
     tdActies.appendChild(delBtn);
 
     rij.appendChild(tdBrouwerij);
@@ -132,6 +153,10 @@
     rij.appendChild(tdActies);
 
     bierTabel.appendChild(rij);
+  }
+
+  function slaOp() {
+    localStorage.setItem('bierVerzameling', JSON.stringify(bieren));
   }
 </script>
 
