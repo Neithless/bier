@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Bierflessen Verzameling</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 5px;
+    }
+    .btn {
+      padding: 5px 10px;
+      margin: 0 2px;
+      cursor: pointer;
+    }
+    .add-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+    .del-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+    }
+    .qty-btn {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Mijn Bierflessen Verzameling</h2>
+
+<form id="bierForm">
+  <input type="text" id="brouwerijInput" placeholder="Brouwerij" required>
+  <input type="text" id="bierInput" placeholder="Biernaam" required>
+  <button type="submit" class="btn add-btn">Toevoegen</button>
+</form>
+
+<table id="bierTabel">
+  <thead>
+    <tr>
+      <th>Brouwerij</th>
+      <th>Bier</th>
+      <th>Voorraad</th>
+      <th>Acties</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+  const form = document.getElementById('bierForm');
+  const brouwerijInput = document.getElementById('brouwerijInput');
+  const bierInput = document.getElementById('bierInput');
+  const bierTabel = document.querySelector('#bierTabel tbody');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const brouwerij = brouwerijInput.value.trim();
+    const bier = bierInput.value.trim();
+    if (brouwerij && bier) {
+      voegRijToe(brouwerij, bier);
+      brouwerijInput.value = '';
+      bierInput.value = '';
+    }
+  });
+
+  function voegRijToe(brouwerij, bier) {
+    const rij = document.createElement('tr');
+
+    const tdBrouwerij = document.createElement('td');
+    tdBrouwerij.textContent = brouwerij;
+
+    const tdBier = document.createElement('td');
+    tdBier.textContent = bier;
+
+    const tdVoorraad = document.createElement('td');
+    let voorraad = 0;
+    const span = document.createElement('span');
+    span.textContent = voorraad;
+
+    const plusBtn = document.createElement('button');
+    plusBtn.textContent = '+';
+    plusBtn.className = 'btn qty-btn';
+    plusBtn.onclick = () => {
+      voorraad++;
+      span.textContent = voorraad;
+    };
+
+    const minBtn = document.createElement('button');
+    minBtn.textContent = '−';
+    minBtn.className = 'btn qty-btn';
+    minBtn.onclick = () => {
+      if (voorraad > 0) {
+        voorraad--;
+        span.textContent = voorraad;
+      }
+    };
+
+    tdVoorraad.appendChild(minBtn);
+    tdVoorraad.appendChild(span);
+    tdVoorraad.appendChild(plusBtn);
+
+    const tdActies = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Verwijder';
+    delBtn.className = 'btn del-btn';
+    delBtn.onclick = () => rij.remove();
+    tdActies.appendChild(delBtn);
+
+    rij.appendChild(tdBrouwerij);
+    rij.appendChild(tdBier);
+    rij.appendChild(tdVoorraad);
+    rij.appendChild(tdActies);
+
+    bierTabel.appendChild(rij);
+  }
+</script>
+
+</body>
+</html>
